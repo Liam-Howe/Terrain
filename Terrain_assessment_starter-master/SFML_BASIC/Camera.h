@@ -48,7 +48,13 @@ public:
             if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::E)){
                 MoveUpDown(-1);
             }
- 
+			if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::O)){
+				OrthographicProjection();
+			}
+			if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::I)){
+				perspectiveProjection();
+			}
+
             if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::Right)){
                 TurnRightLeft(1);
             }
@@ -80,6 +86,26 @@ public:
         position+=(forward*(forwardSpeed*dir));
 		
     }
+
+	void OrthographicProjection(){ //Dir=+1=>Forward, dir=-1=> Back
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		//set up a 3D Perspective View volume
+		//gluPerspective(90.f, 1.f, 1.f, 300.0f);//fov, aspect, zNear, zFar 
+
+		//set up a  orthographic projection same size as window
+		//this means the vertex coordinates are in pixel space
+		//glOrtho(0, 800, 0, 600, 0, 1); // use pixel coordinates
+
+		glOrtho(0, 800, 0, 600,0, 300);
+	}
+	void perspectiveProjection(){
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(90.f, (float)800 / 600, 1.f, 300.0f);//fov, aspect, zNear, zFar
+	}
  
     void TurnRightLeft(int dir){ //Dir=+1=>Right, dir=-1=> Left
    

@@ -133,6 +133,8 @@ void Terrain::Init(){
 
 void Terrain::Draw(){
 
+	//vertices[0] = glTexCood2D(0,0);
+
 	glBegin(GL_TRIANGLES);
 	for(int i =0;i<numVerts;i++){
 			glColor3fv(colors[i]);

@@ -35,7 +35,10 @@ int main()
     // Create the main window 
 	// Create the main window
 	//sf::RenderWindow window(sf::VideoMode(800, 600, 32), "SFML First Program");
-
+	sf::Texture rock, water, grass;
+	rock.loadFromFile("rock.jpg");
+	water.loadFromFile("water.png");
+	grass.loadFromFile("grass.png");
 	sf::ContextSettings Settings;
 	Settings.depthBits = 24; // Request a 24 bits depth buffer
 	Settings.stencilBits = 8;  // Request a 8 bits stencil buffer
