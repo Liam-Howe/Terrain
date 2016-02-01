@@ -20,4 +20,5 @@ void main()
 	{
 		gl_FragColor = seaColour;
 	}
+	//gl_FragColor = gl_Color;
 }

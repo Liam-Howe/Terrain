@@ -15,6 +15,7 @@ Terrain::Terrain(void)
 	terrDepth=50;
 	vertices=NULL;
 	colors=NULL;	
+	normals = NULL;
 	textureCoOrdinates = NULL;
 	
 	
@@ -68,10 +69,18 @@ void Terrain::Init(){
 	
 	delete [] vertices;//just in case we've called init before
 	vertices=new vector[numVerts];
+	delete[] normals;
 	delete [] colors;
 	colors=new vector[numVerts];
+	normals = new vector[numVerts];
 	delete[] textureCoOrdinates;
 	textureCoOrdinates = new vector[numVerts];
+
+	GLfloat * a, *b, *c;
+	GLfloat normal[3];
+
+	GLfloat materialAmbDiff[] = { 0.9f, 0.5f, 0.3f, 1.0f }; // create an array of RGBA values
+
 
 
 	//interpolate along the edges to generate interior points
@@ -94,71 +103,79 @@ void Terrain::Init(){
 			front 0,1+-----+1,1
 			     left   right
 				 */
+
+			//tri 1
+			a = vertices[vertexNum];
 			setPoint(textureCoOrdinates[vertexNum], 0, 1, 0);
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
 
-
+			b = vertices[vertexNum];
 			setPoint(textureCoOrdinates[vertexNum], 1, 1, 0);
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, front), front);
 			
+			c = vertices[vertexNum];
 			setPoint(textureCoOrdinates[vertexNum], 1, 0, 0);
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
+
+			NormalVector(a,b,c, normal);
+			AddNormal(vertexNum, normal);
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////
 			
+			//tri 2
+			a = vertices[vertexNum];
 			setPoint(textureCoOrdinates[vertexNum], 0, 1, 0);
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
 
-
+			b = vertices[vertexNum];
 			setPoint(textureCoOrdinates[vertexNum], 1, 0, 0);
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
 			
+			c = vertices[vertexNum];
 			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, back), back);
-
-
-			//declare a degenerate triangle
-			//TODO: fix this to draw the correct triangle
-			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
-			setPoint(colors[vertexNum], 0, 0, 0);
-			setPoint(vertices[vertexNum++], 0, 0, 0);
-
-			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
-			setPoint(colors[vertexNum], 0, 0, 0);
-			setPoint(vertices[vertexNum++], 0, 0, 0);
-			
-			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
-			setPoint(colors[vertexNum], 0, 0, 0);
-			setPoint(vertices[vertexNum++], 0, 0, 0);
-
-			
-
-
-
+			NormalVector(a, b, c, normal);
+			AddNormal(vertexNum, normal);
 
 		}
 	}
-
-
-
-
 }
 
+void Terrain::AddNormal(int lastIndex, GLfloat n[3])
+{
+	for (int i = 0; i < 3; i++)
+	{
+		setPoint(normals[lastIndex - i], n[0], n[1], n[2]);
+	}
+}
 
 void Terrain::Draw( ){
 
-	//vertices[0] = glTexCood2D(0,0);
-
 	glBegin(GL_TRIANGLES);
 	for(int i =0;i<numVerts;i++){
-			glColor3fv(colors[i]);
+			//glColor3fv(colors[i]);
 			glTexCoord2fv(textureCoOrdinates[i]);
 			glVertex3fv(vertices[i]);
+			glNormal3fv(normals[i]);
 	}
 	glEnd();
 }
+void Terrain::NormalVector(GLfloat p1[3], GLfloat p2[3], GLfloat p3[3], GLfloat n[3])
+{
+
+	GLfloat v1[3], v2[3]; // two vectors
+
+	//calculate two vectors lying on the surface
+	// v1=p1-p2
+	// v2=p3-p2
+
+	for (int i = 0; i<3; i++){
+		v1[i] = p2[i] - p1[i];
+		v2[i] = p3[i] - p2[i];
+	}
+
+	// calculate cross product of two vectors
+	n[0] = v1[1] * v2[2] - v2[1] * v1[2];
+	n[1] = v1[2] * v2[0] - v2[2] * v1[0];
+	n[2] = v1[0] * v2[1] - v2[0] * v1[1];
+
+} //done
