@@ -16,6 +16,7 @@ public:
 	aiVector3D lookat;
     float forwardSpeed;
     float roationSpeed;
+
      
     Camera():forwardSpeed(0.5f),roationSpeed(0.1f){}
  
@@ -51,21 +52,21 @@ public:
 			if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::O)){
 				OrthographicProjection();
 			}
-			if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::I)){
+			if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::P)){
 				perspectiveProjection();
 			}
 
             if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::Right)){
-                TurnRightLeft(1);
-            }
-            if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::Left)){
                 TurnRightLeft(-1);
             }
+            if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::Left)){
+                TurnRightLeft(1);
+            }
             if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::Up)){
-               TurnUpDown(1);
+               TurnUpDown(-1);
             }
             if ((e.type == sf::Event::KeyPressed) && (e.key.code == sf::Keyboard::Down)){
-                TurnUpDown(-1);
+                TurnUpDown(1);
  
             }
 	
@@ -87,21 +88,17 @@ public:
 		
     }
 
-	void OrthographicProjection(){ //Dir=+1=>Forward, dir=-1=> Back
+	void OrthographicProjection()
+	{ //Dir=+1=>Forward, dir=-1=> Back
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-
-		//set up a 3D Perspective View volume
-		//gluPerspective(90.f, 1.f, 1.f, 300.0f);//fov, aspect, zNear, zFar 
-
-		//set up a  orthographic projection same size as window
-		//this means the vertex coordinates are in pixel space
-		//glOrtho(0, 800, 0, 600, 0, 1); // use pixel coordinates
-
-		glOrtho(0, 800, 0, 600,0, 300);
+		glOrtho(-20, 20, -20, 20,100,-200);
+		glMatrixMode(GL_MODELVIEW);
 	}
-	void perspectiveProjection(){
+
+	void perspectiveProjection()
+	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		gluPerspective(90.f, (float)800 / 600, 1.f, 300.0f);//fov, aspect, zNear, zFar

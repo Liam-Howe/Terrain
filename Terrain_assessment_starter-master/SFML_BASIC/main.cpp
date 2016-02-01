@@ -35,9 +35,9 @@ int main()
     // Create the main window 
 	// Create the main window
 	//sf::RenderWindow window(sf::VideoMode(800, 600, 32), "SFML First Program");
-	sf::Texture rock, water, grass;
+	sf::Texture rock, sea, grass;
 	rock.loadFromFile("rock.jpg");
-	water.loadFromFile("water.png");
+	sea.loadFromFile("water.png");
 	grass.loadFromFile("grass.png");
 	sf::ContextSettings Settings;
 	Settings.depthBits = 24; // Request a 24 bits depth buffer
@@ -46,6 +46,7 @@ int main()
 	int width = 800, height = 600;
 	sf::RenderWindow App(sf::VideoMode(width, height, 32), "SFML OpenGL", sf::Style::Close, Settings);
  
+	bool debug_mode = false;
 	
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
@@ -99,15 +100,21 @@ int main()
              
 			//update the camera
 			camera.Update(Event);
- 
-            
-    
+			if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::I))
+			{
+				debug_mode = !debug_mode;
+			}
         } 
-           
+	
+		
         //Prepare for drawing 
         // Clear color and depth buffer 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-   
+		sf::Shader::bind(&shader);
+		shader.setParameter("rock", rock);
+		shader.setParameter("sea", sea);
+		shader.setParameter("grass", grass);
+
         // Apply some transformations 
         //initialise the worldview matrix
 		glMatrixMode(GL_MODELVIEW); 
@@ -115,8 +122,14 @@ int main()
 
 		//get the viewing transform from the camera
 		camera.ViewingTransform();
-
-
+		if (debug_mode)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //Draw only lines no fill
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // normal mode
+		}
 		//make the world spin
 		//TODO:probably should remove this in final
 		static float ang=0.0;

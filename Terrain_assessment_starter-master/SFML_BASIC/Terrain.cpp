@@ -2,6 +2,9 @@
 #include "SFML/OpenGL.hpp"
 #include "Terrain.h"
 #include <cmath>
+#include "SFML/Graphics.hpp" 
+#include "SFML/Graphics/Shader.hpp"
+
 
 Terrain::Terrain(void)
 {
@@ -89,7 +92,7 @@ void Terrain::Init(){
 			//tri
 			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
 			setPoint(vertices[vertexNum++],left,getHeight(left,front),front);
-
+		
 
 
 			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
@@ -131,7 +134,7 @@ void Terrain::Init(){
 }
 
 
-void Terrain::Draw(){
+void Terrain::Draw( ){
 
 	//vertices[0] = glTexCood2D(0,0);
 
