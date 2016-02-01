@@ -15,6 +15,8 @@ Terrain::Terrain(void)
 	terrDepth=50;
 	vertices=NULL;
 	colors=NULL;	
+	textureCoOrdinates = NULL;
+	
 	
 	//num squares in grid will be width*height, two triangles per square
 	//3 verts per triangle
@@ -28,6 +30,7 @@ Terrain::~Terrain(void)
 {
 	delete [] vertices;
 	delete [] colors;
+	delete[] textureCoOrdinates;
 }
 
 //interpolate between two values
@@ -67,6 +70,8 @@ void Terrain::Init(){
 	vertices=new vector[numVerts];
 	delete [] colors;
 	colors=new vector[numVerts];
+	delete[] textureCoOrdinates;
+	textureCoOrdinates = new vector[numVerts];
 
 
 	//interpolate along the edges to generate interior points
@@ -80,47 +85,58 @@ void Terrain::Init(){
 			float right=lerp(-terrDepth/2,terrDepth/2,(float)(i+1)/gridDepth);
 			
 			/*
-			back   +-----+	looking from above, the grid is made up of regular squares
+			back 0,0  +-----+1,0	looking from above, the grid is made up of regular squares
 			       |tri1/|	'left & 'right' are the x cooded of the edges of the square
 				   |   / |	'back' & 'front' are the y coords of the square
 				   |  /  |	each square is made of two trianlges (1 & 2)
 				   | /   |	
 				   |/tri2|
-			front  +-----+
+			front 0,1+-----+1,1
 			     left   right
 				 */
-			//tri
-			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
-			setPoint(vertices[vertexNum++],left,getHeight(left,front),front);
-		
-
-
-			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
-			setPoint(vertices[vertexNum++],right,getHeight(right,front),front);
-
-			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
-			setPoint(vertices[vertexNum++],right,getHeight(right,back),back);
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////
+			setPoint(textureCoOrdinates[vertexNum], 0, 1, 0);
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
 
 
-
+			setPoint(textureCoOrdinates[vertexNum], 1, 1, 0);
+			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
+			setPoint(vertices[vertexNum++], right, getHeight(right, front), front);
+			
+			setPoint(textureCoOrdinates[vertexNum], 1, 0, 0);
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+			setPoint(textureCoOrdinates[vertexNum], 0, 1, 0);
+			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
+			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
 
+
+			setPoint(textureCoOrdinates[vertexNum], 1, 0, 0);
+			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
+			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
+			
+			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, back), back);
 
 
 			//declare a degenerate triangle
 			//TODO: fix this to draw the correct triangle
-			setPoint(colors[vertexNum],0,0,0);
-			setPoint(vertices[vertexNum++],0,0,0);
-			setPoint(colors[vertexNum],0,0,0);
-			setPoint(vertices[vertexNum++],0,0,0);
-			setPoint(colors[vertexNum],0,0,0);
-			setPoint(vertices[vertexNum++],0,0,0);
+			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
+			setPoint(colors[vertexNum], 0, 0, 0);
+			setPoint(vertices[vertexNum++], 0, 0, 0);
+
+			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
+			setPoint(colors[vertexNum], 0, 0, 0);
+			setPoint(vertices[vertexNum++], 0, 0, 0);
+			
+			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
+			setPoint(colors[vertexNum], 0, 0, 0);
+			setPoint(vertices[vertexNum++], 0, 0, 0);
+
+			
 
 
 
@@ -141,6 +157,7 @@ void Terrain::Draw( ){
 	glBegin(GL_TRIANGLES);
 	for(int i =0;i<numVerts;i++){
 			glColor3fv(colors[i]);
+			glTexCoord2fv(textureCoOrdinates[i]);
 			glVertex3fv(vertices[i]);
 	}
 	glEnd();

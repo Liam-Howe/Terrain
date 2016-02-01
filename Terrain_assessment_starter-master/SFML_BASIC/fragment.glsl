@@ -12,11 +12,11 @@ void main()
 	{
 		gl_FragColor = rockColour;
 	}
-	 if( height > 3 && height < 5.5)
+	 if( height > 1 && height < 5.5)
 	{
 		gl_FragColor = grassColour;
 	}
-	 if(height >0 && height <3)
+	 if(height >0 && height <1)
 	{
 		gl_FragColor = seaColour;
 	}

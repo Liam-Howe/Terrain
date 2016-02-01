@@ -12,7 +12,7 @@ class Terrain
 	//I know, very inefficient, but let's run before we walk
 	vector *vertices;
 	vector *colors;
-
+	vector *textureCoOrdinates;
 	float getHeight(float x, float y);
 	void setPoint(vector, float, float,float);
 	
