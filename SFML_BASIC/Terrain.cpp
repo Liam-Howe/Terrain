@@ -15,11 +15,14 @@ Terrain::Terrain(void)
 	terrDepth=50;
 	vertices=NULL;
 	colors=NULL;	
+	textureCoOrdinates = NULL;
+//	normals = NULL;
+//	points = NULL;
 	
 	//num squares in grid will be width*height, two triangles per square
 	//3 verts per triangle
 	 numVerts=gridDepth*gridWidth*2*3;
-
+	 currentTriangle = 0;
 
 }
 
@@ -28,6 +31,8 @@ Terrain::~Terrain(void)
 {
 	delete [] vertices;
 	delete [] colors;
+	delete[] textureCoOrdinates;
+//	delete[] points;
 }
 
 //interpolate between two values
@@ -67,6 +72,12 @@ void Terrain::Init(){
 	vertices=new vector[numVerts];
 	delete [] colors;
 	colors=new vector[numVerts];
+	delete[] textureCoOrdinates;
+	textureCoOrdinates = new vector[numVerts];
+//	normals = new vector[numVerts];
+	//delete[] points;
+	//points = new vector[numVerts];
+	
 
 
 	//interpolate along the edges to generate interior points
@@ -80,68 +91,88 @@ void Terrain::Init(){
 			float right=lerp(-terrDepth/2,terrDepth/2,(float)(i+1)/gridDepth);
 			
 			/*
-			back   +-----+	looking from above, the grid is made up of regular squares
+			back 0,0  +-----+1,0	looking from above, the grid is made up of regular squares
 			       |tri1/|	'left & 'right' are the x cooded of the edges of the square
 				   |   / |	'back' & 'front' are the y coords of the square
 				   |  /  |	each square is made of two trianlges (1 & 2)
 				   | /   |	
 				   |/tri2|
-			front  +-----+
+			front 0,1+-----+1,1
 			     left   right
 				 */
-			//tri
-			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
-			setPoint(vertices[vertexNum++],left,getHeight(left,front),front);
-		
 
 
-			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
-			setPoint(vertices[vertexNum++],right,getHeight(right,front),front);
-
-			setPoint(colors[vertexNum],(rand()%255)/255.0,(rand()%255)/255.0,(rand()%255)/255.0);
-			setPoint(vertices[vertexNum++],right,getHeight(right,back),back);
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
+			//tri2
+			setPoint(textureCoOrdinates[vertexNum], 0, 1, 0);
+			setPoint(colors[vertexNum], 1, 1, 1);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
+	
 
 
-
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
+			setPoint(textureCoOrdinates[vertexNum], 1, 1, 0);
+			setPoint(colors[vertexNum], 1, 1, 1);
+			setPoint(vertices[vertexNum++], right, getHeight(right, front), front);
+			
+			setPoint(textureCoOrdinates[vertexNum], 1, 0, 0);
+			setPoint(colors[vertexNum], 1, 1, 1);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
-
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//tri1
+			setPoint(textureCoOrdinates[vertexNum], 1, 0, 0);
+			setPoint(colors[vertexNum], 1, 1, 1);
+			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
+			
+			
+			setPoint(textureCoOrdinates[vertexNum], 0, 0, 0);
+			setPoint(colors[vertexNum], 1, 1, 1);
 			setPoint(vertices[vertexNum++], left, getHeight(left, back), back);
 
-
-			//declare a degenerate triangle
-			//TODO: fix this to draw the correct triangle
-			setPoint(colors[vertexNum],0,0,0);
-			setPoint(vertices[vertexNum++],0,0,0);
-			setPoint(colors[vertexNum],0,0,0);
-			setPoint(vertices[vertexNum++],0,0,0);
-			setPoint(colors[vertexNum],0,0,0);
-			setPoint(vertices[vertexNum++],0,0,0);
-
-
-
-
+			setPoint(textureCoOrdinates[vertexNum], 0, 1, 0);
+			setPoint(colors[vertexNum], 1, 1, 1);
+			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
 		}
 	}
-
-
-
-
 }
+void Terrain::NormalVector(GLfloat p1[3], GLfloat p2[3], GLfloat p3[3], GLfloat n[3]){
+
+	GLfloat v1[3], v2[3]; // two vectors
+
+	//calculate two vectors lying on the surface
+	// v1=p2-p1
+	// v2=p3-p2
+
+	for (int i = 0; i<3; i++){
+		v1[i] = p2[i] - p1[i];
+		v2[i] = p3[i] - p2[i];
+	}
+
+	// calculate cross product of two vectors ( n= v1 x v2)
+	n[0] = v1[1] * v2[2] - v2[1] * v1[2];
+	n[1] = v1[2] * v2[0] - v2[2] * v1[0];
+	n[2] = v1[0] * v2[1] - v2[0] * v1[1];
+
+
+	//
+} //done
 
 
 void Terrain::Draw( ){
 
 	//vertices[0] = glTexCood2D(0,0);
-
+	
 	glBegin(GL_TRIANGLES);
-	for(int i =0;i<numVerts;i++){
+	for(int i =0;i<numVerts;i++)
+	{
+		if (i == currentTriangle)
+		{
+			NormalVector(vertices[i], vertices[i + 2], vertices[i + 1], normals);
+			currentTriangle += 3;
+			glNormal3fv(normals);
+		}
 			glColor3fv(colors[i]);
-			glVertex3fv(vertices[i]);
+			glTexCoord2fv(textureCoOrdinates[i]);
+			glVertex3fv(vertices[i]);	
 	}
+	currentTriangle = 0;
 	glEnd();
 }

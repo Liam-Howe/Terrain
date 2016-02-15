@@ -12,7 +12,15 @@ class Terrain
 	//I know, very inefficient, but let's run before we walk
 	vector *vertices;
 	vector *colors;
-
+	vector *textureCoOrdinates;
+	GLfloat normals[3];
+	//GLfloat points[][3] = { 
+	//{ 0.0f, 0.0f, 0.0f },
+	//{ 1.0f, 0.0f, 0.0f }/*,
+	//{ 1.0f, 1.0f, 0.0f },
+	//{ 0.0f, 1.0f, 0.0f }*/ };
+	int currentTriangle;
+	void NormalVector(GLfloat p1[3], GLfloat p2[3], GLfloat p3[3], GLfloat n[3]);
 	float getHeight(float x, float y);
 	void setPoint(vector, float, float,float);
 	
