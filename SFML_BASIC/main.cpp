@@ -35,7 +35,7 @@ int main()
     // Create the main window 
 	// Create the main window
 	//sf::RenderWindow window(sf::VideoMode(800, 600, 32), "SFML First Program");
-	sf::Texture rock, sea, grass;
+	sf::Texture rock, sea, grass, snow;
 	rock.loadFromFile("rock.jpg");
 	sea.loadFromFile("water.png");
 	grass.loadFromFile("grass.png");
@@ -73,7 +73,7 @@ int main()
     gluPerspective(90.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
 	
 	GLfloat light_color[] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat light_position[] = { 0.0, 1.0, 0.0, 0.0 };
+	GLfloat light_position[] = { 0.0, 4.0, 0.0, 0.0 };
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color); // set color of diffuse component
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_color); // set color of specular component
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
@@ -133,7 +133,7 @@ int main()
 		shader.setParameter("rock", rock);
 		shader.setParameter("sea", sea);
 		shader.setParameter("grass", grass);
-
+		shader.setParameter("highest", terrain.highestPoint);
         // Apply some transformations 
         //initialise the worldview matrix
 		glMatrixMode(GL_MODELVIEW); 
@@ -151,8 +151,10 @@ int main()
 		}
 		//make the world spin
 		//TODO:probably should remove this in final
+		GLfloat light_position[] = { -15.0,-15.0, 0.0, 0.0 };
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
 		static float ang=0.0;
-		ang+=0.01f;
+		//ang+=0.01f;
 		glRotatef(ang*2,0,1,0);//spin about y-axis
 		
 		sf::Shader::bind(&shader);

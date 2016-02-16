@@ -1,4 +1,10 @@
+
 #pragma once
+#include <cmath>
+#include "SFML/OpenGL.hpp"
+#include "SFML/Graphics.hpp" 
+#include "SFML/Graphics/Shader.hpp"
+
 class Terrain
 {
 	//size of the mesh forming the terrain
@@ -12,6 +18,7 @@ class Terrain
 	//I know, very inefficient, but let's run before we walk
 	vector *vertices;
 	vector *colors;
+	sf::Image map;
 	vector *textureCoOrdinates;
 	GLfloat normals[3];
 	//GLfloat points[][3] = { 
@@ -27,7 +34,7 @@ class Terrain
 public:
 	Terrain(void);
 	~Terrain(void);
-
+	float highestPoint;
 	void Init();
 	void Draw();
 };
